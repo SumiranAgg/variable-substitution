@@ -54,8 +54,8 @@ jobs:
 
         $comment = "fdgsdfgsfdg\ngsdfgsdfg"
 
-        $url = "https://api.github.com/repos/sumiranagg/actions-ci/issues/2/comments"
+        $url = "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
         $headers = @{
-          'Authorization' = 'token 24cc27d4586618b6b5abe51f1878ea9ab01f9699'
+          'Authorization' = 'token $GITHUB_TOKEN'
         }
         Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body "{ `"body`": `"${comment}`" }"
