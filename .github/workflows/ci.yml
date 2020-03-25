@@ -21,7 +21,9 @@ jobs:
       run: |
         $comment = "fdgsdfgsfdg\ngsdfgsdfg"
         $url = "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments"
+        $url
         $headers = @{
           'Authorization' = 'token $GITHUB_TOKEN'
         }
+        $headers
         Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body "{ `"body`": `"${comment}`" }"
