@@ -1,15 +1,9 @@
-on:
-  pull_request:
-    branches:
-      - master
+on: [push,pull_request]
 
 jobs:
   build_test_job:
     name: 'Build and test job'
-    runs-on: ${{ matrix.os }}
-    strategy:
-        matrix:
-          os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: windows-latest
     steps:
 
     - name: 'Checking out repo code'
@@ -23,3 +17,47 @@ jobs:
     - name: 'Run L0 tests'
       run: |
         npm run test
+        
+    - name : 'Run test coverage'
+      env:
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        $coverage_result = npm run coverage
+        $start = $false;
+        $middle = $false; 
+        $end = $false; 
+        $count = 0; 
+
+        foreach ($j in $coverage_result) 
+        { 
+          if ($j.tostring().startswith("--------------")) 
+          { 
+                if (!$start) 
+                { 
+                    $start = $true;
+                    $start_index = $count 
+                } 
+                elseif (!$middle) 
+                {
+                    $middle = $true; 
+                    $middle_index = $count 
+                } 
+                elseif (!$end) 
+                { 
+                    $end = $true; 
+                    $end_index = $count 
+                } 
+          }
+          $count++
+        }
+
+        $tbl_md = $coverage_result[($start_index+1)..($end_index-1)] -join "\n"
+        $summary = $coverage_result[($end_index + 1)..$count] -join "\n"
+        $comment = $tbl_md + "\n" + $summary
+
+        $url = "https://api.github.com/repos/sumiranagg/actions-ci/issues/2/comments"
+        $headers = @{
+          'Authorization' = 'token 24cc27d4586618b6b5abe51f1878ea9ab01f9699'
+        }
+        Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body "{ `"body`": `"${comment}`" }"
