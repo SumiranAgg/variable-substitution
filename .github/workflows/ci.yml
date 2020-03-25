@@ -20,9 +20,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         $comment = "fdgsdfgsfdg\ngsdfgsdfg"
-        $GITHUB_REPOSITORY
+        echo $GITHUB_REPOSITORY
+        echo $PR_NUMBER
         $url = "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/$PR_NUMBER/comments"
-        $url
+        echo $url
         $headers = @{
           "Authorization" = "token ${GITHUB_TOKEN}"
         }
